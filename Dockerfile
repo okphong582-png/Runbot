@@ -9,20 +9,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+# Tạo user không phải root (UID 1000) theo chuẩn Hugging Face Spaces
+RUN useradd -m -u 1000 user
+USER user
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    PORT=7860
+
+WORKDIR /home/user/app
 
 # Cài đặt Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=user requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
 
 # Copy mã nguồn dự án
-COPY . .
+COPY --chown=user . .
 
-# Port mặc định cho Hugging Face Spaces / Web Health Check
+# Port mặc định cho Hugging Face Spaces
 EXPOSE 7860
-
-ENV PYTHONUNBUFFERED=1
-ENV PORT=7860
 
 # Khởi chạy bot
 CMD ["python", "app.py"]
