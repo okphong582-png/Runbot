@@ -1,0 +1,41 @@
+name: Run Telegram TTS Bot 24/7
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Tự động kích hoạt lại mỗi 5 giờ (đảm bảo trước khi job chạm ngưỡng trần 6 giờ của GitHub)
+    - cron: '0 */5 * * *'
+  push:
+    branches: [main]
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340 # Giới hạn chạy tối đa ~5.6 giờ mỗi phiên
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsndfile1 ffmpeg espeak-ng
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Telegram Bot
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          PORT: 7860
+        run: |
+          python bot_tts.py

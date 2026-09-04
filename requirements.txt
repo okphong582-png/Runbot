@@ -1,0 +1,13 @@
+# Core dependencies for Telegram Bot & VieNeu-TTS v3 Turbo (CPU ONNX)
+requests>=2.31.0
+numpy>=1.24.0
+soundfile>=0.12.0
+onnxruntime>=1.20.0
+sea-g2p>=0.9.1
+kaldi-native-fbank>=1.20
+soxr>=0.3.7
+tokenizers>=0.20
+huggingface_hub>=0.25.0
+librosa>=0.11.0
+python-docx>=1.1.0
+PyYAML>=6.0
